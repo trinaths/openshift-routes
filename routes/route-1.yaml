@@ -4,17 +4,10 @@
     labels:
       name: f5-demo-app-route
     name: route-1
-    namespace: myproject
-    annotations:
-      virtual-server.f5.com/balance: least-connections-node
+    namespace: openshift
   spec:
     host: mysite.f5demo.com
-    path: "/test/demo"
-    port:
-      targetPort: 8080
-    tls:
-      termination: edge
-      insecureEdgeTerminationPolicy: Allow
+    path: "/home"
     to:
       kind: Service
       name: f5-demo-service
