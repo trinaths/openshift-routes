@@ -1,0 +1,71 @@
+---
+# Enable wild card policy
+
+  apiVersion: v1
+  kind: Route
+  metadata:
+    labels:
+      name: f5-demo-app-route
+    name: f5-route-8
+    namespace: myproject
+    annotations:
+      virtual-server.f5.com/balance: least-connections-node
+  spec:
+    host: wildcard.f5-demo-app-route-10-myproject.192.168.99.101.nip.io
+    port:
+      targetPort: "9090"
+    to:
+      kind: Service
+      name: f5-demo-app-route
+    wildcardPolicy: Subdomain
+
+---
+#re-write route
+
+apiVersion: v1
+kind: Route
+metadata:
+  labels:
+    name: f5-demo-app-route
+  name: f5-route-9
+  namespace: myproject
+  annotations:
+      virtual-server.f5.com/balance: least-connections-node
+      virtual-server.f5.com/rewrite-app-root: "/home"
+spec:
+    to:
+      kind: Service
+      name: f5-demo-app-route
+---
+#re-write multiple paths in single annotation
+
+apiVersion: v1
+kind: Route
+metadata:
+  labels:
+    name: f5-demo-app-route
+  name: f5-route-10
+  namespace: myproject
+  annotations:
+      virtual-server.f5.com/rewrite-app-root: "mysite.f5demo.com=/index"
+spec:
+    to:
+      kind: Service
+      name: f5-demo-app-route
+---
+#re-write target URL
+
+apiVersion: v1
+kind: Route
+metadata:
+  labels:
+    name: f5-demo-app-route
+  name: f5-route-11
+  namespace: myproject
+  annotations:
+      virtual-server.f5.com/balance: least-connections-node
+      virtual-server.f5.com/rewrite-target-url: "mysite.f5demo.com=new.f5demo.com"
+spec:
+    to:
+      kind: Service
+      name: f5-demo-app-route
