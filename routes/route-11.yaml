@@ -4,7 +4,7 @@
     labels:
       name: f5-demo-app-route
     name: route-11
-    namespace: myproject
+    namespace: f5demo
   spec:
     host: mysite.f5demo.com
     path: "/test/demo"
