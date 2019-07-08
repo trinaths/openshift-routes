@@ -3,12 +3,11 @@
   metadata:
     labels:
       name: f5-demo-app-route
-    name: route-11
+    name: multiple-paths-1
     namespace: f5demo
   spec:
     host: mysite.f5demo.com
-    path: "/test/demo"
+    path: "/aboutus"
     to:
       kind: Service
-      name: f5-demo-service
-      weight: 100
+      name: f5-demo-app-route

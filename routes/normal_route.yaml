@@ -10,5 +10,5 @@
     path: "/home"
     to:
       kind: Service
-      name: f5-demo-service
+      name: f5-demo-app-route
       weight: 100

@@ -1,0 +1,150 @@
+{
+  "$schema": "https://raw.githubusercontent.com/F5Networks/f5-appsvcs-extension/master/schema/latest/as3-schema-3.11.0-3.json",
+  "class": "AS3",
+  "declaration": {
+    "class": "ADC",
+    "schemaVersion": "3.11.0",
+    "openshift": {
+      "class": "Tenant",
+      "Shared": {
+        "class": "Application",
+        "template": "shared",
+        "openshift_insecure_routes": {
+          "rules": [
+            {
+              "name": "openshift_route_f5demo_multiple_paths_1",
+              "conditions": [
+                {
+                  "event": "request",
+                  "type": "httpHeader",
+                  "name": "host",
+                  "all": {
+                    "values": [
+                      "mysite.f5demo.com"
+                    ],
+                    "operand": "equals"
+                  }
+                },
+                {
+                  "event": "request",
+                  "index": 1,
+                  "type": "httpUri",
+                  "pathSegment": {
+                    "values": [
+                      "aboutus"
+                    ],
+                    "operand": "equals"
+                  }
+                }
+              ],
+              "actions": [
+                {
+                  "event": "request",
+                  "type": "forward",
+                  "select": {
+                    "pool": {
+                      "use": "openshift_f5demo_f5_demo_app_route"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "openshift_route_f5demo_multiple_paths_2",
+              "conditions": [
+                {
+                  "event": "request",
+                  "type": "httpHeader",
+                  "name": "host",
+                  "all": {
+                    "values": [
+                      "mysite.f5demo.com"
+                    ],
+                    "operand": "equals"
+                  }
+                },
+                {
+                  "event": "request",
+                  "index": 1,
+                  "type": "httpUri",
+                  "pathSegment": {
+                    "values": [
+                      "contactus"
+                    ],
+                    "operand": "equals"
+                  }
+                }
+              ],
+              "actions": [
+                {
+                  "event": "request",
+                  "type": "forward",
+                  "select": {
+                    "pool": {
+                      "use": "openshift_f5demo_f5_demo_app_route_2"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "strategy": "first-match",
+          "class": "Endpoint_Policy"
+        },
+        "openshift_f5demo_f5_demo_app_route": {
+          "members": [
+            {
+              "addressDiscovery": "static",
+              "servicePort": 8080,
+              "serverAddresses": [
+                "10.129.0.10",
+                "10.129.0.9",
+                "10.130.0.10",
+                "10.130.0.9"
+              ]
+            }
+          ],
+          "class": "Pool"
+        },
+        "openshift_f5demo_f5_demo_app_route_2": {
+          "members": [
+            {
+              "addressDiscovery": "static",
+              "servicePort": 8080,
+              "serverAddresses": [
+                "10.129.0.10",
+                "10.129.0.9",
+                "10.130.0.10",
+                "10.130.0.9"
+              ]
+            }
+          ],
+          "class": "Pool"
+        },
+        "https_ose_vserver": {
+          "layer4": "tcp",
+          "translateServerAddress": true,
+          "translateServerPort": true,
+          "class": "Service_HTTP",
+          "virtualAddresses": [
+            "172.16.3.6%0"
+          ],
+          "virtualPort": 443,
+          "snat": "auto"
+        },
+        "ose_vserver": {
+          "layer4": "tcp",
+          "translateServerAddress": true,
+          "translateServerPort": true,
+          "class": "Service_HTTP",
+          "virtualAddresses": [
+            "172.16.3.6%0"
+          ],
+          "virtualPort": 80,
+          "snat": "auto",
+          "policyEndpoint": "/openshift/Shared/openshift_insecure_routes"
+        }
+      }
+    }
+  }
+}
