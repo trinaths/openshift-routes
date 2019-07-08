@@ -3,19 +3,18 @@
   metadata:
     labels:
       name: f5-demo-app-route
-    name: route-1
-    namespace: myproject
+    name: tls-termination-edge
+    namespace: f5demo
     annotations:
       virtual-server.f5.com/balance: least-connections-node
+      virtual-server.f5.com/clientssl: /Common/client-ssl
   spec:
     host: mysite.f5demo.com
-    path: "/test/demo"
+    path: "/"
     port:
       targetPort: 8080
     tls:
       termination: edge
-      insecureEdgeTerminationPolicy: Allow
     to:
       kind: Service
-      name: f5-demo-service
-      weight: 100
+      name: f5-demo-app-route
