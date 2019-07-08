@@ -4,16 +4,15 @@
   metadata:
     labels:
       name: f5-demo-app-route
-    name: route-2
+    name: whitelist-source-range-route
     namespace: f5demo
     annotations:
       virtual-server.f5.com/whitelist-source-range: 1.2.3.4/32,2.2.2.0/24
   spec:
     host: mysite.f5demo.com
-    path: "/home"
+    path: "/"
     port:
       targetPort: 8080
     to:
       kind: Service
-      name: f5-demo-service
-      weight: 100
+      name: f5-demo-app-route
