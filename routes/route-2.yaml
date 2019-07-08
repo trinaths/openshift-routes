@@ -5,17 +5,14 @@
     labels:
       name: f5-demo-app-route
     name: route-2
-    namespace: myproject
-#    annotations:
-#      virtual-server.f5.com/whitelist-source-range: 1.2.3.4/32,2.2.2.0/24
+    namespace: f5demo
+    annotations:
+      virtual-server.f5.com/whitelist-source-range: 1.2.3.4/32,2.2.2.0/24
   spec:
     host: mysite.f5demo.com
-    path: "/test/demo"
+    path: "/home"
     port:
       targetPort: 8080
-    tls:
-      termination: edge
-      insecureEdgeTerminationPolicy: Allow
     to:
       kind: Service
       name: f5-demo-service
