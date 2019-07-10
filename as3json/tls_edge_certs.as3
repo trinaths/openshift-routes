@@ -1,0 +1,148 @@
+{
+    "$schema": "https://raw.githubusercontent.com/F5Networks/f5-appsvcs-extension/master/schema/latest/as3-schema-3.11.0-3.json",
+    "class": "AS3",
+    "declaration": {
+        "class": "ADC",
+        "schemaVersion": "3.11.0",
+        "openshiftas3": {
+            "class": "Tenant",
+            "Shared": {
+                "class": "Application",
+                "template": "shared",
+                "openshift_insecure_routes": {
+                    "rules": [
+                        {
+                            "name": "openshift_route_f5demo_tls_certs",
+                            "conditions": [
+                                {
+                                    "event": "request",
+                                    "type": "httpHeader",
+                                    "name": "host",
+                                    "all": {
+                                        "values": [
+                                            "mysite.f5demo.com"
+                                        ],
+                                        "operand": "equals"
+                                    }
+                                }
+                            ],
+                            "actions": [
+                                {
+                                    "event": "request",
+                                    "type": "forward",
+                                    "select": {
+                                        "pool": {
+                                            "use": "openshift_f5demo_f5_demo_app_service_1"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "strategy": "first-match",
+                    "class": "Endpoint_Policy"
+                },
+                "openshift_secure_routes": {
+                    "rules": [
+                        {
+                            "name": "openshift_route_f5demo_tls_certs",
+                            "conditions": [
+                                {
+                                    "event": "request",
+                                    "type": "httpHeader",
+                                    "name": "host",
+                                    "all": {
+                                        "values": [
+                                            "mysite.f5demo.com"
+                                        ],
+                                        "operand": "equals"
+                                    }
+                                }
+                            ],
+                            "actions": [
+                                {
+                                    "event": "request",
+                                    "type": "forward",
+                                    "select": {
+                                        "pool": {
+                                            "use": "openshift_f5demo_f5_demo_app_service_1"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "strategy": "first-match",
+                    "class": "Endpoint_Policy"
+                },
+                "openshift_f5demo_f5_demo_app_service_1": {
+                    "loadBalancingMode": "least-connections-node",
+                    "members": [
+                        {
+                            "servicePort": 8080,
+                            "serverAddresses": [
+                                "10.129.0.18",
+                                "10.129.0.19",
+                                "10.130.0.30",
+                                "10.130.0.31"
+                            ]
+                        }
+                    ],
+                    "monitors": [
+                        {
+                            "use": "/openshiftas3/Shared/openshift_f5demo_f5_demo_app_service_1_0_http"
+                        }
+                    ],
+                    "class": "Pool"
+                     
+                },
+                "cis_http_vserver": {
+                    "class": "Service_HTTP",
+                    "virtualAddresses": [
+                        "172.16.3.13%0"
+                    ],
+                    "virtualPort": 80,
+                    
+                    "policyEndpoint": "/openshiftas3/Shared/openshift_insecure_routes",
+                    "pool": "/openshiftas3/Shared/openshift_f5demo_f5_demo_app_service_1"
+                },
+                "cis_https_vserver": {
+                    "class": "Service_HTTPS",
+                    "serverTLS": "openshift_route_f5demo_tls_server",
+                    "virtualAddresses": [
+                        "172.16.3.13%0"
+                    ],
+                    "virtualPort": 443,
+                    "policyEndpoint": "/openshiftas3/Shared/openshift_secure_routes",
+                    "pool": "/openshiftas3/Shared/openshift_f5demo_f5_demo_app_service_1"
+                },
+                "openshift_f5demo_f5_demo_app_service_1_0_http": {
+                    "adaptive": false,
+                    "interval": 5,
+                    "dscp": 0,
+                    "receive": "none",
+                    "send": "HTTP GET /",
+                    "timeUntilUp": 0,
+                    "timeout": 10,
+                    "class": "Monitor",
+                    "monitorType": "http",
+                    "targetAddress": "",
+                    "targetPort": 0
+                },
+                "openshift_route_f5demo_tls_server": {
+                    "class": "TLS_Server",
+                    "certificates": [
+                        {
+                            "certificate": "openshift_route_f5demo_tls_certs_client_ssl"
+                        }
+                    ]
+                },
+                "openshift_route_f5demo_tls_certs_client_ssl": {
+                    "class": "Certificate",
+                    "certificate": "-----BEGIN CERTIFICATE-----\nMIICtDCCAZwCCQCfZtayr0qpEjANBgkqhkiG9w0BAQsFADAcMRowGAYDVQQDDBFteXNpdGUuZjVkZW1vLmNvbTAeFw0xOTA3MTAwOTI2MzFaFw0yOTA3MDcwOTI2MzFaMBwxGjAYBgNVBAMMEW15c2l0ZS5mNWRlbW8uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA/xwVZBmMM0s0S9niIKGoilqWy505uz2V6II1mI9Qy0uTudflBUvgZ0GvlFoUzBZ2nqFRLq9ND5F5777thGm8cwJSuAI5yQO/gPfbei56fYy24UzZ/gSkD1eOwEz2+gXta7TWt7KLojTl9ul/fn3UpTUUVv63AykprjO7L/D87EomwdH0w6ukRB2JlMWyS8PQzMFdGkRhT1IBixktqhEo9kPo442RGeCS+uqmQJtFTqjQEO9K23dzqz/ejM2bMUqaW7RYNhGUCbrguyhhMg3ubWVmD6wlEBEdAK1ggsL/r0Fq9nRWAO2OlHmMTG0GNi2OTbg7JkOkY3bpMwWYs1cDTwIDAQABMA0GCSqGSIb3DQEBCwUAA4IBAQCn3i400avnlVoaNn+A7mKvTonWW9RioJtq9ufoaS0pAJX3JC/Z1IOIMudBKIyOvdHWhOgbV4o9JxE+dG1QvSQkdSpROUJTGo51EiSwmW3AMNo3ZgBLBsHoGxyWIM4VBeNwIcwrb9WQ5rtzjPemQlkmG8Iq0z21Y6YtaccIjHH1WL+zFOrJNhWhMWlS/ribk7yxviyfDr9Tl/xXqLpZHJRtdgowfp4xHeJejWY/d3L8v3rVBkTXWsbpJ/VlU27WtBmfIChORsJqEB5LdrxekcOflcLSXhcozz9MzYNIR/Lfk7Zq/OvM5yxuUHq7HPmV14kDRHQc5HNkybQDl8pbHnQL\n-----END CERTIFICATE-----",
+                    "privateKey": "-----BEGIN RSA PRIVATE KEY-----\nMIIEpQIBAAKCAQEA/xwVZBmMM0s0S9niIKGoilqWy505uz2V6II1mI9Qy0uTudflBUvgZ0GvlFoUzBZ2nqFRLq9ND5F5777thGm8cwJSuAI5yQO/gPfbei56fYy24UzZ/gSkD1eOwEz2+gXta7TWt7KLojTl9ul/fn3UpTUUVv63AykprjO7L/D87EomwdH0w6ukRB2JlMWyS8PQzMFdGkRhT1IBixktqhEo9kPo442RGeCS+uqmQJtFTqjQEO9K23dzqz/ejM2bMUqaW7RYNhGUCbrguyhhMg3ubWVmD6wlEBEdAK1ggsL/r0Fq9nRWAO2OlHmMTG0GNi2OTbg7JkOkY3bpMwWYs1cDTwIDAQABAoIBAQCnj6SlOPqTfmP9JkGWuVfgeBvv5XdT+uGJ9GyLpialQSDowluVHP9qEwTmZjyeyGplSwPtrArrnNwAkuGjRWgYCoCWiC+4TpPse+BW4kxmRpSga0ALzrSLtzD2MhdOpbIKOp+FzOpWQnSBt2Ccjr2rPa/8bBV9J/5Og4ABv0IBWGtiQPwZYntpsCLcs74t3Lsi3Tpbkp+kJG/g1XDkwEk35vmbefcO9BfebnBbW8A9qbUZ9Vm4m9EJ3tLJ6F8QyrzArrvG7cZ285qRo4vs+0wzdwjQZY8xXnxzWjmJOr3T94eTY4HZSDXlqkw3IZmB7eXYnzKyHVd+a832ntEnpj2hAoGBAP/1MU9+OkrLWgy5Q7qmnoeAHlS61S93vRMBO7CihTx3EivkFc+txCUqwP54mAyv4JzqbFUQu9PjrTN0fSLUcDtr5jU1oHEu2d9Gob7ShjBAfq4MmFk3g+tdhq4cuObJf0IG8V5s4K03+Xi/dmDLzVcA53bHjHeIxrzmtUGSI5ppAoGBAP8m2unW5OW9WTusBbDjd1OyhVZe24tLUwODL0ZfzoswWJySTg0WjIDskHn9WIRp9cAQSlhrV//+ekTxWpAGfXGaLno5awavYZjowYBjXWRtwNV9RtM2/mqWg/RU6Po0w43jd9m7H2F5ncPf2wkp3W2bKyrd6ZXbrfhmpJ/WI8j3AoGBAJGOSRVwrgucqr/zlz2MxTg/NoBuow9UY3RsThp7wZMKD45gLbslkRalwoyz3ZvRZMU3VpXlZzrvDa7mPsdQ0eYozQhTT8Mtpn6fdxnCNMc51hB6XyTVOjLdw9o9wTSVP8Y3lolhFz/KRhdRoisXmtUwUXCtuAa+BG6mMEtypMaJAoGAQ0l448ADHz7/AEiOO6bQ+iaTGULsvOBBZSS8W9+6NWSriabfpH300a8RLsqMBGd5IoxpPsYYL+9pSTMpAeBkRog1h5AK1Hl90HhZR0VtBKYY+3QNMHhJQcytwcp+ojU1+P4qxiWd0fPjkhs/xTvgJB6OlMBu8FE9oMtY0LoFN+MCgYEAlGwIUqU632GtluR7T7adpC0DJo59qed02pVwyUYrke6cCDCRJOcGbgvuoW64CZUsUS4en1rNROEXt10jMn0AbnH51qMqWdamVcECKyCEGQNwOM2XL9hZneLED1vZcDiY3rxvRboWhzaY5Dk1tRLtfUC3tOPoujuwKhFLCnP99mc=\n-----END RSA PRIVATE KEY-----"
+                }
+            }
+        }
+    }
+}
