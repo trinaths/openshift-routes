@@ -1,7 +1,7 @@
   apiVersion: v1
   kind: Service
   metadata:
-    name: f5-demo-app-route
+    name: f5-demo-app-service-1
     labels:
       name: f5-demo-app-route
     namespace: f5demo
@@ -18,7 +18,7 @@
   apiVersion: v1
   kind: Service
   metadata:
-    name: f5-demo-app-route-2
+    name: f5-demo-app-service-2
     labels:
       name: f5-demo-app-route
     namespace: f5demo
@@ -35,7 +35,7 @@
   apiVersion: v1
   kind: Service
   metadata:
-    name: f5-demo-app-route-3
+    name: f5-demo-app-service-3
     labels:
       name: f5-demo-app-route
     namespace: f5demo

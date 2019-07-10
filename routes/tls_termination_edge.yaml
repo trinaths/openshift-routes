@@ -7,14 +7,22 @@
     namespace: f5demo
     annotations:
       virtual-server.f5.com/balance: least-connections-node
-      virtual-server.f5.com/clientssl: /Common/client-ssl
+      virtual-server.f5.com/clientssl: /Common/clientssl
+      virtual-server.f5.com/health: |
+        [
+          {
+            "path": "mysite.f5demo.com/",
+            "send": "HTTP GET /",
+            "interval": 5,
+            "timeout": 10
+          }
+        ]
   spec:
     host: mysite.f5demo.com
-    path: "/"
     port:
       targetPort: 8080
     tls:
       termination: edge
     to:
       kind: Service
-      name: f5-demo-app-route
+      name: f5-demo-app-service-1

@@ -3,8 +3,8 @@
   metadata:
     labels:
       name: f5-demo-app-route
-    name: route-3
-    namespace: myproject
+    name: tls-reencrypt-termination
+    namespace: f5demo
     annotations:
       virtual-server.f5.com/balance: round-robin
       virtual-server.f5.com/clientssl: /Common/client-ssl
