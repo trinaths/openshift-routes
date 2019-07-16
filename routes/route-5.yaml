@@ -3,18 +3,18 @@
   metadata:
     labels:
       name: f5-demo-app-route
-    name: route-5
+    name: alternate-backend-route
     namespace: f5demo
   spec:
     host: mysite.f5demo.com
     to:
       kind: Service
-      name: f5-demo-app-route
+      name: f5-demo-app-service-1
       weight: 20
     alternateBackends:
     - kind: Service
-      name: f5-demo-app-route-2
+      name: f5-demo-app-service-2
       weight: 10
     - kind: Service
-      name: f5-demo-app-route-3
+      name: f5-demo-app-service-3
       weight: 10

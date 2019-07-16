@@ -3,12 +3,12 @@
   metadata:
     labels:
       name: f5-demo-app-route
-    name: route-1
+    name: route-101
     namespace: f5demo
   spec:
     host: mysite.f5demo.com
     path: "/home"
     to:
       kind: Service
-      name: f5-demo-app-route
+      name: f5-demo-app-service-1
       weight: 100

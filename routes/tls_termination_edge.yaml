@@ -6,19 +6,9 @@
     name: tls-termination-edge
     namespace: f5demo
     annotations:
-      virtual-server.f5.com/balance: least-connections-node
       virtual-server.f5.com/clientssl: /Common/clientssl
-      virtual-server.f5.com/health: |
-        [
-          {
-            "path": "mysite.f5demo.com/",
-            "send": "HTTP GET /",
-            "interval": 5,
-            "timeout": 10
-          }
-        ]
   spec:
-    host: mysite.f5demo.com
+    host: mysite.f5demo2.com
     port:
       targetPort: 8080
     tls:
