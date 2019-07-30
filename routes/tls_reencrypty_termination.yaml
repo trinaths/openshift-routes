@@ -1,25 +1,105 @@
-  apiVersion: v1
-  kind: Route
-  metadata:
-    labels:
-      name: f5-demo-app-route
-    name: tls-reencrypt-termination
-    namespace: f5demo
-    annotations:
-      virtual-server.f5.com/balance: round-robin
-      virtual-server.f5.com/clientssl: /Common/client-ssl
-      virtual-server.f5.com/serverssl: /Common/server-ssl
-      virtual-server.f5.com/secure-serverssl: "true"
-  spec:
-    host: mysite.f5demo.com
-    # from https://clouddocs.f5.com/containers/v2/openshift/kctlr-openshift-routes.html
-    # IMP: The BIG-IP Controller does not support path-based Routes for TLS re-encryption.
-    #path: "/index.html"
-    port:
-      targetPort: 8080
-    tls:
+apiVersion: v1
+kind: Route
+metadata:
+  labels:
+    name: f5-demo-app-route
+  name: tls-reencpt-certs
+  namespace: f5demo
+spec:
+  host: mysite.f5demo.com
+  to:
+    kind: Service
+    name: f5-demo-app-service-1
+  tls:
       termination: reencrypt
-    to:
-      kind: Service
-      name: f5-demo-service
-      weight: 100
+      certificate: |
+         -----BEGIN CERTIFICATE-----
+         MIIDUDCCAjgCCQDgRB4UIiD+hjANBgkqhkiG9w0BAQUFADBqMQswCQYDVQQGEwJV
+         UzELMAkGA1UECAwCQ0ExFjAUBgNVBAcMDU1vdW50YWluIFZpZXcxDDAKBgNVBAoM
+         A09TMzEMMAoGA1UECwwDRW5nMRowGAYDVQQDDBFteXNpdGUuZjVkZW1vLmNvbTAe
+         Fw0xOTA2MjYxMDEyNTRaFw0yMDA2MjUxMDEyNTRaMGoxCzAJBgNVBAYTAlVTMQsw
+         CQYDVQQIDAJDQTEWMBQGA1UEBwwNTW91bnRhaW4gVmlldzEMMAoGA1UECgwDT1Mz
+         MQwwCgYDVQQLDANFbmcxGjAYBgNVBAMMEW15c2l0ZS5mNWRlbW8uY29tMIIBIjAN
+         BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA10QO+e/3doL6LXiNBi312/Tc1EW2
+         pEGQvL6/SvBz47Q4r65W4LjGog/XapBxTZNrA1y2FB1iDXHtRLMx8MiQNhfJCO/p
+         jPH6ej8pK/HxCx4snYk1LVAeyJldV5AAZ4fGU8lHCoADn96xxGB41xddaKkfatx2
+         gWtrqT6MIwdTS6C0Ecx0ddEm3++aAUwGyDS7ejE3n6lIe9XuYfquDLXdY1H98/pF
+         4JSTyy2X2ueYhRQfC2uu6N1qrPAjwg/J282dL5+cvcINLgeK3GZJ1fBvuHXOsVTH
+         nvkWZMVYLEuocwjnRw4L1esEEm23Yd89gYa0p5T3dfmeBhB4bDFsQQwL6wIDAQAB
+         MA0GCSqGSIb3DQEBBQUAA4IBAQBmIZ20CrT8gxY0y96wVYtiA7rBjIXP/JnrkBPX
+         YkCIfAJYYD1ODjUjEjSoMRmY15WraGv2WOp8SAcdkFtuN5yMkfCi5mz+LCcVJH6R
+         nN+/iJsi3mnp2X0dVkxE/fpLbdg+Du6tlKXkIkgQjcIdW6N7aQuEZAMYRYG+miJR
+         +4LPhyjiWaLMW6NCU+Nd9fI4mh3wGo0may9rynrucDIOKqUxXQsD3J8nRPSpDJcv
+         4bATwZ0g6spLOZgtes7WzoFi3NTSybZ+X4BCr3rl5YRUbozqgfbdUcLYj2z8dCpv
+         tLUOkV5TAy0qJx0yWC+1VTgr56vmEP1EjQBW+KliIyh76O3Z
+         -----END CERTIFICATE-----
+      key: |
+         -----BEGIN RSA PRIVATE KEY-----
+         MIIEpAIBAAKCAQEA10QO+e/3doL6LXiNBi312/Tc1EW2pEGQvL6/SvBz47Q4r65W
+         4LjGog/XapBxTZNrA1y2FB1iDXHtRLMx8MiQNhfJCO/pjPH6ej8pK/HxCx4snYk1
+         LVAeyJldV5AAZ4fGU8lHCoADn96xxGB41xddaKkfatx2gWtrqT6MIwdTS6C0Ecx0
+         ddEm3++aAUwGyDS7ejE3n6lIe9XuYfquDLXdY1H98/pF4JSTyy2X2ueYhRQfC2uu
+         6N1qrPAjwg/J282dL5+cvcINLgeK3GZJ1fBvuHXOsVTHnvkWZMVYLEuocwjnRw4L
+         1esEEm23Yd89gYa0p5T3dfmeBhB4bDFsQQwL6wIDAQABAoIBAAySAdnghG/cOCW9
+         m2aX+npssxSGOaMf3QbYkK0cm3fZh1Hi+VnIEHlYOXkUlDk2eZJJsKw+BwLH+1X+
+         rNTlsV4nR2sJL3c2jizjUVEqoKvIiExuvbc2rYWDRysc0pk5GYC9CTP4w71rMLBJ
+         /eR5jc/VyGriEt1921yXtXE6NUf+L+osOnhj7WVhD74kqQksPmX9bXpTTDQRrQK+
+         O/Wc0jJLYygQ6fyuVaAOioOBxlph9Zzi/Yt22tKyvqyKirXRfqrL9CIUUZdkp3X5
+         6dh+H4laCu9Q0+dOHZjb6YfktoY/ln3emY7QbtPtVv0P1jpX0s+jz+xDKnxfnWi9
+         UI151BECgYEA+5ckA4Krj6ZNYJamC04WvAvlfcOucvGd87ptJQjIuP/X9zG0AqWg
+         VtXtpyLBjd/xXcVusuroOoDXAA9VyOn/bn41xGIoISMp3OvkanJGkVq5CprXM4XV
+         H1e4fjFUyDZmhDrua6IUrql8iEF2dsGAP+fCKKnxmRDFlKyymD66WuMCgYEA2wnu
+         +G8SvbwtsDSBPvu8w4u9i/y0oLyY5uScI0f4qRjI7hykcdCjraWRpUK7Wz2hlatb
+         m/hP4EPOqZlcEaTMNcOiPaG97rzJBOzeu3DG1NXn03MFBb2hIO2CbGwhl7ovaj3A
+         isTctmGBemvgXKVDuEfGh1mjXK+VShIgfUM/MVkCgYBz5oGpuFWufG8i8uOVS6j/
+         gf97u1yvCQ25zQUgzXYie4ITF2uU2JYPyseLemBuKl830o8Xj03iPZ5OIcJkJyAL
+         18qPKKTR9y/+3RDB1Nkbdw7Nit1el+XBZZjRUYp8HUuG2Nsi7GzYta1v27BmLugV
+         CIASWY+58tcCkbhImIUi/wKBgQCUbKnDLLj9Wtt20E1YWYsy0qlRh576YHIX24e2
+         HJnyM7pMJ5qDCUcwbsY/vvVoQV4SJnjAOsYdiLUslaAe0JYURInWy5gBg2mP7daM
+         G0KQjJY34XPgzPu3bVn4kFk/EEn66vdi0T1iVLZBN4JkJRS7dd+gbexV7SDzfU8I
+         sp3KmQKBgQDEXrLW1Ui7ngX91A75B0ALJ+ARHLBtOk7TSUxTW5L8ZEgkfy1OAo96
+         RxhKiKoX3MW3YilNkRQ9/KpV8lCgGyALDBUIza0HNaOEc9wVsp0wILgL5guLBIIj
+         5F7tKj47UBQNz9ZDfkXw2Q2rD8u5fKdrLBVjcEQNZ4yd0g7bvqpVmA==
+         -----END RSA PRIVATE KEY-----
+      caCertificate: |
+         -----BEGIN CERTIFICATE-----
+         MIIDUDCCAjgCCQDgRB4UIiD+hjANBgkqhkiG9w0BAQUFADBqMQswCQYDVQQGEwJV
+         UzELMAkGA1UECAwCQ0ExFjAUBgNVBAcMDU1vdW50YWluIFZpZXcxDDAKBgNVBAoM
+         A09TMzEMMAoGA1UECwwDRW5nMRowGAYDVQQDDBFteXNpdGUuZjVkZW1vLmNvbTAe
+         Fw0xOTA2MjYxMDEyNTRaFw0yMDA2MjUxMDEyNTRaMGoxCzAJBgNVBAYTAlVTMQsw
+         CQYDVQQIDAJDQTEWMBQGA1UEBwwNTW91bnRhaW4gVmlldzEMMAoGA1UECgwDT1Mz
+         MQwwCgYDVQQLDANFbmcxGjAYBgNVBAMMEW15c2l0ZS5mNWRlbW8uY29tMIIBIjAN
+         BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA10QO+e/3doL6LXiNBi312/Tc1EW2
+         pEGQvL6/SvBz47Q4r65W4LjGog/XapBxTZNrA1y2FB1iDXHtRLMx8MiQNhfJCO/p
+         jPH6ej8pK/HxCx4snYk1LVAeyJldV5AAZ4fGU8lHCoADn96xxGB41xddaKkfatx2
+         gWtrqT6MIwdTS6C0Ecx0ddEm3++aAUwGyDS7ejE3n6lIe9XuYfquDLXdY1H98/pF
+         4JSTyy2X2ueYhRQfC2uu6N1qrPAjwg/J282dL5+cvcINLgeK3GZJ1fBvuHXOsVTH
+         nvkWZMVYLEuocwjnRw4L1esEEm23Yd89gYa0p5T3dfmeBhB4bDFsQQwL6wIDAQAB
+         MA0GCSqGSIb3DQEBBQUAA4IBAQBmIZ20CrT8gxY0y96wVYtiA7rBjIXP/JnrkBPX
+         YkCIfAJYYD1ODjUjEjSoMRmY15WraGv2WOp8SAcdkFtuN5yMkfCi5mz+LCcVJH6R
+         nN+/iJsi3mnp2X0dVkxE/fpLbdg+Du6tlKXkIkgQjcIdW6N7aQuEZAMYRYG+miJR
+         +4LPhyjiWaLMW6NCU+Nd9fI4mh3wGo0may9rynrucDIOKqUxXQsD3J8nRPSpDJcv
+         4bATwZ0g6spLOZgtes7WzoFi3NTSybZ+X4BCr3rl5YRUbozqgfbdUcLYj2z8dCpv
+         tLUOkV5TAy0qJx0yWC+1VTgr56vmEP1EjQBW+KliIyh76O3Z
+         -----END CERTIFICATE-----
+      destinationCACertificate: |
+         -----BEGIN CERTIFICATE-----
+         MIIDUDCCAjgCCQDgRB4UIiD+hjANBgkqhkiG9w0BAQUFADBqMQswCQYDVQQGEwJV
+         UzELMAkGA1UECAwCQ0ExFjAUBgNVBAcMDU1vdW50YWluIFZpZXcxDDAKBgNVBAoM
+         A09TMzEMMAoGA1UECwwDRW5nMRowGAYDVQQDDBFteXNpdGUuZjVkZW1vLmNvbTAe
+         Fw0xOTA2MjYxMDEyNTRaFw0yMDA2MjUxMDEyNTRaMGoxCzAJBgNVBAYTAlVTMQsw
+         CQYDVQQIDAJDQTEWMBQGA1UEBwwNTW91bnRhaW4gVmlldzEMMAoGA1UECgwDT1Mz
+         MQwwCgYDVQQLDANFbmcxGjAYBgNVBAMMEW15c2l0ZS5mNWRlbW8uY29tMIIBIjAN
+         BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA10QO+e/3doL6LXiNBi312/Tc1EW2
+         pEGQvL6/SvBz47Q4r65W4LjGog/XapBxTZNrA1y2FB1iDXHtRLMx8MiQNhfJCO/p
+         jPH6ej8pK/HxCx4snYk1LVAeyJldV5AAZ4fGU8lHCoADn96xxGB41xddaKkfatx2
+         gWtrqT6MIwdTS6C0Ecx0ddEm3++aAUwGyDS7ejE3n6lIe9XuYfquDLXdY1H98/pF
+         4JSTyy2X2ueYhRQfC2uu6N1qrPAjwg/J282dL5+cvcINLgeK3GZJ1fBvuHXOsVTH
+         nvkWZMVYLEuocwjnRw4L1esEEm23Yd89gYa0p5T3dfmeBhB4bDFsQQwL6wIDAQAB
+         MA0GCSqGSIb3DQEBBQUAA4IBAQBmIZ20CrT8gxY0y96wVYtiA7rBjIXP/JnrkBPX
+         YkCIfAJYYD1ODjUjEjSoMRmY15WraGv2WOp8SAcdkFtuN5yMkfCi5mz+LCcVJH6R
+         nN+/iJsi3mnp2X0dVkxE/fpLbdg+Du6tlKXkIkgQjcIdW6N7aQuEZAMYRYG+miJR
+         +4LPhyjiWaLMW6NCU+Nd9fI4mh3wGo0may9rynrucDIOKqUxXQsD3J8nRPSpDJcv
+         4bATwZ0g6spLOZgtes7WzoFi3NTSybZ+X4BCr3rl5YRUbozqgfbdUcLYj2z8dCpv
+         tLUOkV5TAy0qJx0yWC+1VTgr56vmEP1EjQBW+KliIyh76O3Z
+         -----END CERTIFICATE-----
